@@ -12,8 +12,7 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeTest;
 
-public class BaseTest
-{
+public class BaseTest {
     //common to all test cases
     //Base URL, Content Type -json-common
 
@@ -25,8 +24,7 @@ public class BaseTest
     public ValidatableResponse vr;
 
     @BeforeTest
-    public void setUp()
-    {
+    public void setUp() {
         //BASE URL, Content Type JSON
         payloadManager = new PayloadManager();
         assertActions = new AssertActions();
@@ -44,6 +42,26 @@ public class BaseTest
                 .setBaseUri(APIConstants.BASE_URL)
                 .addHeader("Content-Type", "application/json")
                 .build().log().all();*/
+    }
+
+        public String getToken () {
+            rs = RestAssured
+                    .given()
+                    .baseUri(APIConstants.BASE_URL)
+                    .basePath(APIConstants.AUTH_URL);
+
+            //Setting payload
+            String payoad = payloadManager.setAuthPayload();
+
+            //Get token
+            response = rs.contentType(ContentType.JSON).body(payoad).when().post();
+
+            //String Extraction
+            String token = payloadManager.getTokenFromJSON(response.toString());
+
+            return token;
+
+        }
 
     }
-}
+
